@@ -10,6 +10,7 @@ const products = require("./models/products");
 const addcart = require("./models/addcart");
 const addwishlist = require("./models/addwishlist");
 const addorders = require("./models/myorders");
+const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 mongoose
@@ -306,6 +307,6 @@ app.delete("/removefromorders/:itemId", jwtmiddleware, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-app.listen(5000, () => {
+app.listen(PORT, () => {
   console.log("Server is running on port 5000");
 });
