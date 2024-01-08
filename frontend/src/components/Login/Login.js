@@ -12,10 +12,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { useMediaQuery } from "@mui/material";
+import { FcGoogle } from "react-icons/fc";
 const labelStyle = { mt: 1, mb: 2 };
 
 const Login = (props) => {
   const navigate = useNavigate();
+  const loginwithgoogle = () => {
+    window.open("http://localhost:5000/auth/google/callback", "_self");
+  };
 
   const crossHandler = () => {
     navigate("/");
@@ -125,6 +129,21 @@ const Login = (props) => {
             variant="contained"
           >
             Login
+          </Button>{" "}
+          <Button
+            sx={{
+              mt: 2,
+              borderRadius: 10,
+              bgcolor: "#2b2d42",
+              width: media ? "30%" : "null",
+              marginLeft: media ? "2rem" : "null",
+            }}
+            onClick={loginwithgoogle}
+          >
+            Login with{" "}
+            <IconButton>
+              <FcGoogle />
+            </IconButton>
           </Button>{" "}
           <div
             style={{

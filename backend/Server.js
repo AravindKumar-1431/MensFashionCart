@@ -10,8 +10,89 @@ const products = require("./models/products");
 const addcart = require("./models/addcart");
 const addwishlist = require("./models/addwishlist");
 const addorders = require("./models/myorders");
+const session = require("express-session");
+const passport = require("passport");
+const loginwithgoogle = require("./models/loginwithgoogle");
+const OAuth2Statergy = require("passport-google-oauth20").Strategy;
 const PORT = process.env.PORT || 5000;
-app.use(cors());
+
+const client_id =
+  "1026936472894-j3pheh0bun4963hr4ijk56j91p0ns6tu.apps.googleusercontent.com";
+const client_secret = "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";
+app.use(
+  session({
+    secret: "aravindqwerty1234",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(
+  new OAuth2Statergy(
+    {
+      clientID: client_id,
+      clientSecret: client_secret,
+      callbackURL: "/auth/google/callback",
+      scope: ["profile", "email"],
+    },
+    async (accesstoken, refreshtoken, profile, done) => {
+      try {
+        let user = await usersignup.findOne({ googleID: profile.id });
+        if (!user) {
+          user = new loginwithgoogle({
+            googleID: profile.id,
+            displayName: profile.displayName,
+            email: profile.emails[0].value,
+            image: profile.photos[0].value,
+          });
+          await user.save();
+        }
+        done(null, user);
+        console.log(user);
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:3000/userprofile",
+    failureRedirect: "http://localhost:3000/login",
+  })
+);
+app.get("/login/success", async (req, res) => {
+  console.log("reqq", req.user);
+  if (req.user) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Credentials", "true"); // Add this line
+    res.status(200).json({ message: "user login", user: req.user });
+  } else {
+    res.status(400).json({ message: "error" });
+  }
+});
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
 app.use(express.json());
 mongoose
   .connect(

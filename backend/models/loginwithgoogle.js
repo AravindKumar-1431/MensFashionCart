@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const usersignup = new mongoose.Schema({
-  fullname: {
+const loginwithgoogle = new mongoose.Schema({
+  googleID: {
     type: String,
     require: true,
   },
@@ -10,17 +10,13 @@ const usersignup = new mongoose.Schema({
     type: String,
     require: true,
   },
-  password: {
+  displayName: {
     type: String,
     require: true,
   },
-  confrimpassword: {
-    type: String,
-    require: true,
-  },
-  googleID: {
+  image: {
     type: String,
     require: true,
   },
 });
-module.exports = mongoose.model("usersignup", usersignup);
+module.exports = mongoose.model("loginwithgoogle", loginwithgoogle);
